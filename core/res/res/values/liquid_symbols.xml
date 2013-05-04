@@ -177,4 +177,7 @@
   <java-symbol type="anim" name="slide_out_right_no_fade" />
   <java-symbol type="array" name="anim_controls_entries" />
 
+  <!-- Panel auto brightness -->
+  <java-symbol type="integer" name="config_panelAutoBrightnessValue" />
+
 </resources>
