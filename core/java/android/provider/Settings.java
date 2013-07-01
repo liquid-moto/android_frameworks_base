@@ -4625,10 +4625,17 @@ public final class Settings {
         public static final String STATUS_BAR_SIGNAL_TEXT = "status_bar_signal";
 
         /**
-         * Custom Recent toggle
          * @hide
          */
         public static final String CUSTOM_RECENT_TOGGLE = "custom_recent_toggle";
+
+        /**
+         * Whether to allow notification vibration while notification alerts are disabled
+         * (e.g. during phone calls). The vibration pattern to be used will be a subtle one;
+         * custom vibration is disabled at that point.
+         * @hide
+         */
+        public static final String NOTIFICATION_VIBRATE_DURING_ALERTS_DISABLED = "vibrate_while_no_alerts";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -4691,6 +4698,7 @@ public final class Settings {
             LOCKSCREEN_SOUNDS_ENABLED,
             SHOW_WEB_SUGGESTIONS,
             NOTIFICATION_LIGHT_PULSE,
+            NOTIFICATION_VIBRATE_DURING_ALERTS_DISABLED,
             SIP_CALL_OPTIONS,
             SIP_RECEIVE_CALLS,
             POINTER_SPEED,
