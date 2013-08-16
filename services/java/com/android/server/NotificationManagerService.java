@@ -2094,7 +2094,7 @@ public class NotificationManagerService extends INotificationManager.Stub
                     } finally {
                         Binder.restoreCallingIdentity(token);
                     }
-
+                    
                     if (notification.icon != 0) {
                         if (old != null && old.statusBarKey != null) {
                             r.statusBarKey = old.statusBarKey;
