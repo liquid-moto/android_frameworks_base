@@ -7360,6 +7360,22 @@ public final class ActivityManagerService extends ActivityManagerNative
         }
     }
 
+    public IBinder getActivityForTask(int task, boolean onlyRoot) {
+        final ActivityStack mainStack = mStackSupervisor.getFocusedStack();
+        synchronized(this) {
+            ArrayList<ActivityStack> stacks = mStackSupervisor.getStacks();
+            for (ActivityStack stack : stacks) {
+                TaskRecord r = stack.taskForIdLocked(task);
+                if (r != null && r.getTopActivity() != null) {
+                    return r.getTopActivity().appToken;
+                } else {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
     // =========================================================
     // THUMBNAILS
     // =========================================================
@@ -14260,6 +14276,8 @@ public final class ActivityManagerService extends ActivityManagerNative
         return kept;
     }
 
+    private ArrayList<Integer> mIgnoreSplitViewUpdate = new ArrayList<Integer>();
+
     /**
      * Decide based on the configuration whether we should shouw the ANR,
      * crash, etc dialogs.  The idea is that if there is no affordnace to
@@ -15482,8 +15500,29 @@ public final class ActivityManagerService extends ActivityManagerNative
                 reportingProcessState, now);
     }
 
+    private ArrayList<Integer> mIgnoreSplitViewUpdateResume = new ArrayList<Integer>();
+
     private final ActivityRecord resumedAppLocked() {
-        return mStackSupervisor.resumedAppLocked();
+        final ActivityRecord starting = mStackSupervisor.resumedAppLocked();
+
+        final long origId = Binder.clearCallingIdentity();
+
+        if (mSecondTaskToResume >= 0) {
+            moveTaskToFront(mSecondTaskToResume, 0, null);
+            mStackSupervisor.resumeTopActivitiesLocked();
+            mStackSupervisor.ensureActivitiesVisibleLocked(null, 0);
+            mIgnoreSplitViewUpdateResume.add(mSecondTaskToResume);
+
+            if (mIgnoreSplitViewUpdateResume.contains((Integer) starting.task.taskId)) {
+                mSecondTaskToResume = -1;
+            } else {
+                mSecondTaskToResume = starting.task.taskId;
+            }
+        }
+
+        Binder.restoreCallingIdentity(origId);
+
+        return starting;
     }
 
     final boolean updateOomAdjLocked(ProcessRecord app) {
@@ -16732,5 +16771,35 @@ public final class ActivityManagerService extends ActivityManagerNative
         ActivityInfo info = new ActivityInfo(aInfo);
         info.applicationInfo = getAppInfoForUser(info.applicationInfo, userId);
         return info;
+    }
+
+    private int mSecondTaskToResume = -1;
+
+    public void notifySplitViewLayoutChanged() {
+        final long origId = Binder.clearCallingIdentity();
+
+        ActivityRecord starting = getFocusedStack().topRunningActivityLocked(null);
+
+        if (mWindowManager != null && starting != null &&
+                mWindowManager.isTaskSplitView(starting.task.taskId)) {
+            Log.e("XPLOD", "[rAL] The current resumed task " + starting.task.taskId + " is split. Checking second");
+
+            // This task was split, we resume the second task if this task wasn't already a resumed task
+            if (mIgnoreSplitViewUpdateResume.contains(starting.task.taskId)) {
+                Log.e("XPLOD", "[rAL] This task (" + starting.task.taskId + ") was called from a split-initiated resume. Ignoring.");
+                mIgnoreSplitViewUpdateResume.remove((Integer) starting.task.taskId);
+            } else {
+                ActivityRecord second = getFocusedStack().topRunningActivityLocked(starting);
+
+                // Is that second task split as well?
+                if (mWindowManager.isTaskSplitView(second.task.taskId)) {
+                    // Don't restore me again
+                    Log.e("XPLOD", "[rAL] There is a second task that I should be ignoring next: " + second.task.taskId);
+                    mSecondTaskToResume = second.task.taskId;
+                }
+            }
+        }
+
+        Binder.restoreCallingIdentity(origId);
     }
 }
