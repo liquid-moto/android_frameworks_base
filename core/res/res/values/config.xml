@@ -1381,4 +1381,7 @@
     <!-- Integer to configure panel auto brightness mode when changed -->
     <integer name="config_panelAutoBrightnessValue">-1</integer>
 
+    <!-- Device supports LED flashlight -->
+    <bool name="config_enableTorch">false</bool>
+
 </resources>

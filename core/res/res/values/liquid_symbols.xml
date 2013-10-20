@@ -218,4 +218,7 @@
   <java-symbol type="style" name="Animation.Toast.SlideRightLeft" />
   <java-symbol type="style" name="Animation.Toast.SlideLeftRight" />
 
+  <!-- Device supports LED flashlight -->
+  <java-symbol type="bool" name="config_enableTorch" />
+
 </resources>
