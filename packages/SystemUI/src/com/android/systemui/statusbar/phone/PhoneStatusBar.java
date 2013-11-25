@@ -56,6 +56,9 @@ import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.inputmethodservice.InputMethodService;
 import android.net.Uri;
 import android.os.Bundle;
@@ -110,6 +113,7 @@ import com.android.internal.util.liquid.ButtonConfig;
 import com.android.internal.util.liquid.ButtonsConstants;
 import com.android.internal.util.liquid.ButtonsHelper;
 import com.android.internal.util.liquid.DeviceUtils;
+import com.android.systemui.liquid.StatusHeaderMachine;
 
 import com.android.systemui.BatteryMeterView;
 import com.android.systemui.BatteryCircleMeterView;
@@ -359,6 +363,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     CustomTheme mCurrentTheme;
     private boolean mRecreating = false;
 
+    private StatusHeaderMachine mStatusHeaderMachine;
+    private Runnable mStatusHeaderUpdater;
+    private ImageView mStatusHeaderImage;
+    private Drawable mHeaderOverlay;
+
     // for disabling the status bar
     int mDisabled = 0;
     boolean mDisableHomeLongpress;
@@ -512,6 +521,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.EXPANDED_DESKTOP_STATE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_CUSTOM_HEADER),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.REMINDER_ALERT_ENABLED),
@@ -1121,6 +1133,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         setTakenSpace();
 
+        mStatusHeaderMachine = new StatusHeaderMachine(mContext);
+        mStatusHeaderImage = (ImageView) mNotificationPanelHeader.findViewById(R.id.header_background_image);
+        mHeaderOverlay = res.getDrawable(R.drawable.bg_custom_header_overlay);
+        updateCustomHeaderStatus();
+
         mClearButton = mStatusBarWindow.findViewById(R.id.clear_all_button);
         mClearButton.setOnClickListener(mClearButtonListener);
         mClearButton.setAlpha(0f);
@@ -1398,6 +1415,66 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mNetworkController.setListener(this);
 
         return mStatusBarView;
+    }
+
+    private void updateCustomHeaderStatus() {
+        ContentResolver resolver = mContext.getContentResolver();
+        boolean customHeader = Settings.System.getInt(
+                resolver, Settings.System.STATUS_BAR_CUSTOM_HEADER, 0) == 1;
+
+        if (mNotificationPanelHeader == null) return;
+
+        // Setup the updating notification bar header image
+        if (customHeader) {
+            if (mStatusHeaderUpdater == null) {
+                mStatusHeaderUpdater = new Runnable() {
+                    private Drawable mPrevious = mNotificationPanelHeader.getBackground();
+
+                    public void run() {
+                        Drawable next = mStatusHeaderMachine.getCurrent();
+                        Log.i(TAG, "Updating status bar header background");
+
+                        setNotificationPanelHeaderBackground(next);
+                        mPrevious = next;
+
+                        // Check every hour. As postDelayed isn't holding a wakelock, it will basically
+                        // only check when the CPU is on. Thus, not consuming battery overnight.
+                        mHandler.postDelayed(this, 1000 * 3600);
+                    }
+                };
+            }
+
+            // Cancel any eventual ongoing statusHeaderUpdater, and start a clean one
+            mHandler.removeCallbacks(mStatusHeaderUpdater);
+            mHandler.post(mStatusHeaderUpdater);
+        } else {
+            if (mStatusHeaderUpdater != null) {
+                mHandler.removeCallbacks(mStatusHeaderUpdater);
+            }
+            setNotificationPanelHeaderBackground(mStatusHeaderMachine.getDefault());
+        }
+    }
+
+    private void setNotificationPanelHeaderBackground(Drawable dwSrc) {
+        Drawable[] arrayDrawable = new Drawable[2];
+
+        // Overlay a dark gradient
+        arrayDrawable[0] = dwSrc;
+        arrayDrawable[1] = mHeaderOverlay;
+        final Drawable dw = new LayerDrawable(arrayDrawable);
+
+        // Transition animation
+        arrayDrawable[0] = mStatusHeaderImage.getDrawable();
+        arrayDrawable[1] = dw;
+
+        if (arrayDrawable[0] != null) {
+            TransitionDrawable transitionDrawable = new TransitionDrawable(arrayDrawable);
+            transitionDrawable.setCrossFadeEnabled(true);
+            mStatusHeaderImage.setImageDrawable(transitionDrawable);
+            transitionDrawable.startTransition(1000);
+        } else {
+            mStatusHeaderImage.setImageDrawable(dw);
+        }
     }
 
     @Override
@@ -4244,6 +4321,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             if (icon !=null && icon.getBackground() != null) {
                 icon.getBackground().setAlpha(alpha);
             }
+	        updateCustomHeaderStatus();
         }
     }
 }
