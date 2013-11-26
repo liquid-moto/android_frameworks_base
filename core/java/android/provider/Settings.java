@@ -2053,9 +2053,9 @@ public final class Settings {
         /* @hide */
         public static final String VOLUME_09 = "volume_09";
         /* @hide */
-        public static final String VOLUME_FM = "volume_fm";
+        public static final String VOLUME_FM = "volume_fm"; 
 
-        /**
+       /**
          * Master volume (float in the range 0.0f to 1.0f).
          * @hide
          */
@@ -2203,7 +2203,7 @@ public final class Settings {
         public static final String[] VOLUME_SETTINGS = {
             VOLUME_VOICE, VOLUME_SYSTEM, VOLUME_RING, VOLUME_MUSIC,
             VOLUME_ALARM, VOLUME_NOTIFICATION, VOLUME_BLUETOOTH_SCO,
-            VOLUME_07, VOLUME_08, VOLUME_09, VOLUME_FM
+			VOLUME_07, VOLUME_08, VOLUME_09, VOLUME_FM
         };
 
         /**
