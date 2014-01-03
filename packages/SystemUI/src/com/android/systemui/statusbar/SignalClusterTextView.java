@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.os.Handler;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
@@ -39,7 +40,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.systemui.statusbar.SignalClusterView.SettingsObserver;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.R;
 
@@ -62,6 +62,7 @@ public class SignalClusterTextView
     TextView mMobileSignalText;
 
     Handler mHandler;
+    SettingsObserver mObserver;
 
     int dBm = 0;
 
@@ -73,7 +74,12 @@ public class SignalClusterTextView
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this);
+                    Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this,
+                    UserHandle.USER_ALL);
+        }
+
+        void unobserve() {
+            mContext.getContentResolver().unregisterContentObserver(this);
         }
 
         @Override public void onChange(boolean selfChange) {
@@ -93,9 +99,7 @@ public class SignalClusterTextView
         super(context, attrs, defStyle);
 
         mHandler = new Handler();
-
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
-        settingsObserver.observe();
+        mObserver = new SettingsObserver(mHandler);
     }
 
     @Override
@@ -111,6 +115,7 @@ public class SignalClusterTextView
                 mPhoneStateListener, PhoneStateListener.LISTEN_SERVICE_STATE
                 | PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 
+            mObserver.observe();
             updateSettings();
         }
     }
@@ -118,6 +123,7 @@ public class SignalClusterTextView
     @Override
     protected void onDetachedFromWindow() {
         if (mAttached) {
+            mObserver.unobserve();
             mAttached = false;
         }
         super.onDetachedFromWindow();
@@ -167,10 +173,10 @@ public class SignalClusterTextView
         }
     };
 
-    private void updateSettings() {
+    public void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-        mSignalClusterStyle = (Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_SIGNAL_TEXT, SIGNAL_CLUSTER_STYLE_NORMAL));
+        mSignalClusterStyle = (Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_SIGNAL_TEXT, SIGNAL_CLUSTER_STYLE_NORMAL, UserHandle.USER_CURRENT));
         updateSignalText();
     }
 }

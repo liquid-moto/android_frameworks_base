@@ -72,6 +72,10 @@ public class SignalClusterView
                     Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this);
         }
 
+        void unobserve() {
+            mContext.getContentResolver().unregisterContentObserver(this);
+        }
+
         @Override
         public void onChange(boolean selfChange) {
             updateSettings();
@@ -91,8 +95,7 @@ public class SignalClusterView
 
         mHandler = new Handler();
 
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
-        settingsObserver.observe();
+        mObserver = new SettingsObserver(mHandler);
     }
 
     public void setNetworkController(NetworkController nc) {
@@ -103,6 +106,8 @@ public class SignalClusterView
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+
+        mObserver.observe();
 
         mWifiGroup      = (ViewGroup) findViewById(R.id.wifi_combo);
         mWifi           = (ImageView) findViewById(R.id.wifi_signal);
@@ -119,6 +124,9 @@ public class SignalClusterView
 
     @Override
     protected void onDetachedFromWindow() {
+
+        mObserver.unobserve();
+
         mWifiGroup      = null;
         mWifi           = null;
         mWifiActivity   = null;
@@ -264,10 +272,11 @@ public class SignalClusterView
         }
     }
 
-    private void updateSettings() {
+    public void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-        mSignalClusterStyle = (Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_SIGNAL_TEXT, SIGNAL_CLUSTER_STYLE_NORMAL));
+        mSignalClusterStyle = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_SIGNAL_TEXT, SIGNAL_CLUSTER_STYLE_NORMAL,
+                UserHandle.USER_CURRENT);
         updateSignalClusterStyle();
     }
 }
