@@ -53,7 +53,12 @@ import static com.android.internal.util.liquid.QSConstants.TILE_VOLUME;
 import static com.android.internal.util.liquid.QSConstants.TILE_WIFI;
 import static com.android.internal.util.liquid.QSConstants.TILE_WIFIAP;
 import static com.android.internal.util.liquid.QSConstants.TILE_REBOOT;
+import static com.android.internal.util.liquid.QSConstants.TILE_FCHARGE;
 
+import android.app.Activity;
+import android.app.ActivityManagerNative;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -105,6 +110,8 @@ import com.android.systemui.quicksettings.VolumeTile;
 import com.android.systemui.quicksettings.WiFiTile;
 import com.android.systemui.quicksettings.WifiAPTile;
 import com.android.systemui.quicksettings.RebootTile;
+import com.android.systemui.quicksettings.FastChargeTile;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -255,6 +262,8 @@ public class QuickSettingsController {
                 qs = new CustomTile(mContext, this, findCustomKey(tile));
             } else if (tile.contains(TILE_CONTACT)) {
                 qs = new ContactTile(mContext, this, findCustomKey(tile));
+            } else if (tile.contains(TILE_FCHARGE)) {
+                qs = new FastChargeTile(mContext, this);
             }
 
             if (qs != null) {
