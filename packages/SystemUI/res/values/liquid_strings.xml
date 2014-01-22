@@ -194,9 +194,10 @@
     <!-- Active display -->
     <string name="active_display_privacy_content">Content message not showing because privacy mode enabled</string>
 
-    <!-- QuickSettings: Fast Charge -->
-    <string name="quick_settings_fcharge_on_label">Fast charge</string>
-    <string name="quick_settings_fcharge_off_label">Disabled</string>
+    <!-- Recents Ram bar -->
+    <string name="memory">RAM</string>
+    <string name="service_free_mem"><xliff:g id="memory">%1$s</xliff:g> free</string>
+    <string name="service_used_mem"><xliff:g id="memory">%1$s</xliff:g> used</string>
 
     <!-- On-the-go -->
     <string name="onthego_notif_ticker">On-The-Go activated</string>
