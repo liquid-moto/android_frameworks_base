@@ -181,13 +181,6 @@
     <string name="pie_phone_status_airplane_mode">Airplane mode on</string>
     <string name="pie_phone_status_emergency_only">Emergency calls only</string>
 
-    <!-- Smart PullDown Warning -->
-    <string name="smart_pulldown_disabled">Smart pulldown is disabled</string>
-
-    <!-- Navigation bar IME navigation -->
-    <string name="accessibility_ime_navigation_left">Cursor left</string>
-    <string name="accessibility_ime_navigation_right">Cursor right</string>
-
     <!-- Title shown in recents popup for adding an application to the split view -->
     <string name="status_bar_recent_add_to_split_view">Add to Split View</string>
 
@@ -198,6 +191,16 @@
     <string name="memory">RAM</string>
     <string name="service_free_mem"><xliff:g id="memory">%1$s</xliff:g> free</string>
     <string name="service_used_mem"><xliff:g id="memory">%1$s</xliff:g> used</string>
+
+    <!-- Hide notification icons -->
+    <string name="status_bar_notification_hide_icon_packages">Hide status bar app\'s notification icon(s)</string>
+
+    <!-- Smart PullDown Warning -->
+    <string name="smart_pulldown_disabled">Smart pulldown is disabled</string>
+
+    <!-- QuickSettings: Fast Charge -->
+    <string name="quick_settings_fcharge_on_label">Fast charge</string>
+    <string name="quick_settings_fcharge_off_label">Disabled</string>
 
     <!-- On-the-go -->
     <string name="onthego_notif_ticker">On-The-Go activated</string>
@@ -212,5 +215,9 @@
     <string name="onthego_service_toggle">Automatically restart service</string>
     <string name="quick_settings_onthego_back">Rear Camera</string>
     <string name="quick_settings_onthego_front">Front Camera</string>
+
+    <!-- Navigation bar IME navigation -->
+    <string name="accessibility_ime_navigation_left">Cursor left</string>
+    <string name="accessibility_ime_navigation_right">Cursor right</string>
 
 </resources>
