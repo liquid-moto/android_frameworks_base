@@ -24,6 +24,9 @@ import android.graphics.drawable.TransitionDrawable;
 import com.android.internal.policy.IKeyguardShowCallback;
 import com.android.internal.widget.LockPatternUtils;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 import android.app.ActivityManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ContentResolver;
@@ -111,6 +114,8 @@ public class KeyguardViewManager {
     private int mBlurRadius = 12;
     private boolean mSeeThrough = false;
     private boolean mIsCoverflow = true;
+    private boolean mLoadWallpaper;
+    private String mWallpaperFile;
 
     private NotificationHostView mNotificationView;
     private NotificationViewManager mNotificationViewManager;
@@ -165,7 +170,7 @@ public class KeyguardViewManager {
                 Settings.System.LOCKSCREEN_BLUR_RADIUS, mBlurRadius);
         mLockscreenNotifications = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_NOTIFICATIONS, mLockscreenNotifications ? 1 : 0) == 1;
-        if(!mSeeThrough) mCustomBackground = null;
+        if(!mSeeThrough) mCustomImage = null;
         if (mLockscreenNotifications && mNotificationViewManager == null) {
             mNotificationViewManager = new NotificationViewManager(mContext, this);
         } else if(!mLockscreenNotifications && mNotificationViewManager != null) {
@@ -192,6 +197,9 @@ public class KeyguardViewManager {
         observer.observe();
 
         updateSettings();
+
+        mWallpaperFile = mContext.getFilesDir() + "/wallpaper.png";
+        mLoadWallpaper = Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_WALLPAPER, 0) == 1;
     }
 
     /**
@@ -248,13 +256,24 @@ public class KeyguardViewManager {
     }
 
     public void setBackgroundBitmap(Bitmap bmp) {
-        if (bmp != null && mSeeThrough) {
-            if (mBlurRadius > 0) {
-                mCustomImage = blurBitmap(bmp, mBlurRadius);
-            } else {
-                mCustomImage = bmp;
+        if (bmp != null && mSeeThrough && mBlurRadius > 0) {
+            mCustomImage = blurBitmap(bmp, mBlurRadius);
+        } else {
+            mCustomImage = bmp;
+        }
+    }
+
+    public void setWallpaper(Bitmap bmp) {
+        Settings.System.putInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_WALLPAPER, bmp != null ? 1 : 0);
+        if (bmp != null) {
+            try {
+                FileOutputStream fos = new FileOutputStream(mWallpaperFile);
+                bmp.compress(CompressFormat.PNG, 100, fos);
+            } catch (FileNotFoundException ex) {
+                Log.e(TAG, "Could not write file: " + mWallpaperFile + "\nError: " + ex.toString());
             }
         }
+        setBackgroundBitmap(bmp);
     }
 
     private Bitmap blurBitmap(Bitmap bmp, int radius) {
@@ -635,15 +654,26 @@ public class KeyguardViewManager {
         mViewManager.updateViewLayout(mKeyguardHost, mWindowLayoutParams);
 
         mKeyguardHost.restoreHierarchyState(mStateContainer);
-        if (mCustomImage != null) {
-            int currentRotation = mKeyguardView.getDisplay().getRotation() * 90;
-            mCustomImage = rotateBmp(mCustomImage, mLastRotation - currentRotation);
-            mLastRotation = currentRotation;
-            mIsCoverflow = false;
-            setCustomBackground(mCustomImage);
+
+        if((mCustomImage != null || (mSeeThrough && mBlurRadius == 0))) {
+            if (mCustomImage != null) {
+                if (mSeeThrough) {
+                    int currentRotation = mKeyguardView.getDisplay().getRotation() * 90;
+                    mCustomImage = rotateBmp(mCustomImage, mLastRotation - currentRotation);
+                    mLastRotation = currentRotation;
+                }
+                mIsCoverflow = false;
+                setCustomBackground(mCustomImage);
+            } else {
+                updateShowWallpaper(false);
+            }
         } else {
-            updateShowWallpaper(true);
             mIsCoverflow = true;
+        }
+
+        if (mLoadWallpaper) {
+            setBackgroundBitmap(BitmapFactory.decodeFile(mWallpaperFile));
+            mLoadWallpaper = false;
         }
     }
 
