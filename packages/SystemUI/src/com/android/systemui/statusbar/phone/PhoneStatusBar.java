@@ -4015,6 +4015,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (uiThemeMode != mCurrUiThemeMode) {
             mCurrUiThemeMode = uiThemeMode;
             recreateStatusBar(false);
+            rebuildRecentsScreen();
             return;
         }
 
