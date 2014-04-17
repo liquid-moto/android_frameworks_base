@@ -87,6 +87,7 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
@@ -675,8 +676,9 @@ public class NotificationManagerService extends INotificationManager.Stub
             final ComponentName component, final int userid) {
         final int permission = mContext.checkCallingPermission(
                 android.Manifest.permission.SYSTEM_NOTIFICATION_LISTENER);
-        if (permission == PackageManager.PERMISSION_DENIED)
+        if (permission == PackageManager.PERMISSION_DENIED) {
             checkCallerIsSystem();
+        }
 
         synchronized (mNotificationList) {
             try {
@@ -1311,7 +1313,9 @@ public class NotificationManagerService extends INotificationManager.Stub
             } else if (action.equals(Intent.ACTION_USER_PRESENT)) {
                 // turn off LED when user passes through lock screen
                 if (!mDreaming) {
-                    mNotificationLight.turnOff();
+                    if (mLedNotification == null) {
+                        mNotificationLight.turnOff();
+                    }
                 }
             } else if (action.equals(Intent.ACTION_USER_SWITCHED)) {
                 // reload per-user settings
@@ -1371,7 +1375,8 @@ public class NotificationManagerService extends INotificationManager.Stub
                     Settings.System.QUIET_HOURS_DIM),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.Global.getUriFor(
-                    Settings.Global.BATTERY_SAVER_LED_DISABLE), false, this, UserHandle.USER_ALL);
+                    Settings.Global.BATTERY_SAVER_LED_DISABLE),
+                    false, this, UserHandle.USER_ALL);
             update(null);
         }
 
