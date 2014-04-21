@@ -104,10 +104,10 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.android.internal.statusbar.StatusBarIcon;
-import com.android.internal.util.slim.ButtonConfig;
-import com.android.internal.util.slim.ButtonsConstants;
-import com.android.internal.util.slim.ButtonsHelper;
-import com.android.internal.util.slim.DeviceUtils;
+import com.android.internal.util.liquid.ButtonConfig;
+import com.android.internal.util.liquid.ButtonsConstants;
+import com.android.internal.util.liquid.ButtonsHelper;
+import com.android.internal.util.liquid.DeviceUtils;
 
 import com.android.systemui.BatteryMeterView;
 import com.android.systemui.BatteryCircleMeterView;
