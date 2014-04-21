@@ -350,47 +350,44 @@ public class ResourcesManager {
                 boolean isDefaultDisplay = (displayId == Display.DEFAULT_DISPLAY);
                 DisplayMetrics dm = defaultDisplayMetrics;
                 final boolean hasOverrideConfiguration = key.hasOverrideConfiguration();
-
-                boolean themeChanged = (changes & ActivityInfo.CONFIG_UI_THEME_MODE) != 0;
-                if ((!isDefaultDisplay || hasOverrideConfiguration)) {
-                    themeChanged = (changes & ActivityInfo.CONFIG_THEME_RESOURCE) != 0;
-                    if (themeChanged) {
-                        AssetManager am = r.getAssets();
-                        if (am.hasThemeSupport()) {
-                            r.setIconResources(null);
-                            detachThemeAssets(am);
-                            if (config.customTheme != null) {
-                                attachThemeAssets(am, config.customTheme);
-                                attachIconAssets(am, config.customTheme);
-                                setActivityIcons(r);
-                            }
+                boolean themeChanged = (changes & ActivityInfo.CONFIG_THEME_RESOURCE) != 0;
+                final boolean themeChanged2 = (changes & ActivityInfo.CONFIG_UI_THEME_MODE) != 0;
+                if (themeChanged) {
+                    AssetManager am = r.getAssets();
+                    if (am.hasThemeSupport()) {
+                        r.setIconResources(null);
+                        detachThemeAssets(am);
+                        if (config.customTheme != null) {
+                            attachThemeAssets(am, config.customTheme);
+                            attachIconAssets(am, config.customTheme);
+                            setActivityIcons(r);
                         }
                     }
-                    if (!isDefaultDisplay || hasOverrideConfiguration) {
-                        if (tmpConfig == null) {
-                            tmpConfig = new Configuration();
-                        }
-                        tmpConfig.setTo(config);
-                        if (!isDefaultDisplay) {
-                            dm = getDisplayMetricsLocked(displayId);
-                            applyNonDefaultDisplayMetricsToConfigurationLocked(dm, tmpConfig);
-                        }
-                        if (hasOverrideConfiguration) {
-                            tmpConfig.updateFrom(key.mOverrideConfiguration);
-                        }
-                        r.updateConfiguration(tmpConfig, dm, compat);
-                    } else {
-                        r.updateConfiguration(config, dm, compat);
+                }
+                if (!isDefaultDisplay || hasOverrideConfiguration) {
+                    if (tmpConfig == null) {
+                        tmpConfig = new Configuration();
                     }
-                    if (themeChanged) {
-                        r.updateStringCache();
+                    tmpConfig.setTo(config);
+                    if (!isDefaultDisplay) {
+                        dm = getDisplayMetricsLocked(displayId);
+                        applyNonDefaultDisplayMetricsToConfigurationLocked(dm, tmpConfig);
                     }
+                    if (hasOverrideConfiguration) {
+                        tmpConfig.updateFrom(key.mOverrideConfiguration);
+                    }
+                    r.updateConfiguration(tmpConfig, dm, compat);
+                } else {
+                    r.updateConfiguration(config, dm, compat);
+                }
+                if (themeChanged || themeChanged2) {
+                    r.updateStringCache();
+                }
                 //Slog.i(TAG, "Updated app resources " + v.getKey()
                 //        + " " + r + ": " + r.getConfiguration());
-                } else {
-                    //Slog.i(TAG, "Removing old resources " + v.getKey());
-                    mActiveResources.removeAt(i);
-                }
+            } else {
+                //Slog.i(TAG, "Removing old resources " + v.getKey());
+                mActiveResources.removeAt(i);
             }
         }
 
