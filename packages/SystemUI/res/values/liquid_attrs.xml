@@ -18,7 +18,7 @@
 
 <resources>
 
-    <!-- Battery view -->
+    <!-- Battery icon -->
     <declare-styleable name="BatteryIcon">
         <attr name="batteryView" format="string" />
     </declare-styleable>
@@ -31,11 +31,6 @@
         <attr name="round_background" format="boolean" />
         <attr name="is_oval" format="boolean" />
         <attr name="android:scaleType" />
-    </declare-styleable>
-
-    <!-- Quick ribbons -->
-    <declare-styleable name="QuickSettingsContainer">
-        <attr name="singleRow" format="boolean" />
     </declare-styleable>
 	
     <!-- Battery bar -->

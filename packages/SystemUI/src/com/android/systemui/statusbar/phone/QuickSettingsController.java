@@ -154,6 +154,7 @@ public class QuickSettingsController {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+
                 switch (msg.what) {
                     case MSG_UPDATE_TILES:
                         setupQuickSettings();
@@ -231,7 +232,7 @@ public class QuickSettingsController {
                 qs = new ToggleLockscreenTile(mContext, this);
             } else if (tile.equals(TILE_NETWORKMODE) && mobileDataSupported) {
                 qs = new MobileNetworkTypeTile(mContext,
-                     this, mStatusBarService.mNetworkController);
+                        this, mStatusBarService.mNetworkController);
             } else if (tile.equals(TILE_AUTOROTATE)) {
                 qs = new AutoRotateTile(mContext, this, mHandler);
             } else if (tile.equals(TILE_AIRPLANE)) {
@@ -309,6 +310,7 @@ public class QuickSettingsController {
                 mQuickSettingsTiles.add(qs);
             }
         }
+
     }
 
     private String findCustomKey (String tile) {
