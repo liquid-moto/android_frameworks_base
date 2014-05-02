@@ -236,4 +236,7 @@
     <string name="halo_tutorial2">Move me: double tap &amp; drag</string>
     <string name="halo_tutorial3">Browse tasks: Horizontal drag</string>
 
+    <!-- Title shown in notification popup for launching notification in floating mode -->
+    <string name="status_bar_notification_floating_item_title">Floating mode</string>
+
 </resources>
