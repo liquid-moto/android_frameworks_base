@@ -19,7 +19,6 @@ package android.inputmethodservice;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
@@ -46,7 +45,6 @@ import android.text.method.MovementMethod;
 import android.util.Log;
 import android.util.PrintWriterPrinter;
 import android.util.Printer;
-import android.view.IWindowManager;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -980,7 +978,7 @@ public class InputMethodService extends AbstractInputMethodService {
         if (fullScreenOverride) {
             isFullscreen = false;
         } else {
-            isFullscreen = mShowInputRequested && (onEvaluateFullscreenMode() || onEvaluateSplitView());
+            isFullscreen = mShowInputRequested && onEvaluateFullscreenMode();
         }
         boolean changed = mLastShowInputRequested != mShowInputRequested;
         if (mIsFullscreen != isFullscreen || !mFullscreenApplied) {
@@ -1076,25 +1074,6 @@ public class InputMethodService extends AbstractInputMethodService {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Splitview stuff - FIXME: This needs a proper doc entry
-     * @hide
-     */
-    public boolean onEvaluateSplitView() {
-        if (mCandidatesFrame.getChildCount() > 0) {
-            Context candidateContext = mCandidatesFrame.getChildAt(0).getContext();
-            if (candidateContext instanceof Activity) {
-                return ((Activity) candidateContext).isSplitView();
-            } else {
-                Log.e("XPLOD", "NOT ACTIVITY");
-                return false;
-            }
-        } else {
-            Log.e("XPLOD", "NO CHILD");
-            return false;
-        }
     }
 
     /**

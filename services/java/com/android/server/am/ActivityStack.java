@@ -75,11 +75,8 @@ import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.EventLog;
-import android.util.Log;
 import android.util.Slog;
 import android.view.Display;
-import android.view.IWindowManager;
-import android.view.WindowManagerGlobal;
 import com.android.internal.app.ActivityTrigger;
 
 import java.io.FileDescriptor;
@@ -761,6 +758,7 @@ final class ActivityStack {
         prev.state = ActivityState.PAUSING;
         prev.task.touchActiveTime();
         clearLaunchTime(prev);
+
         final ActivityRecord next = mStackSupervisor.topRunningActivityLocked();
         if (!prev.isHomeActivity() && (next == null || next.task != prev.task)) {
             prev.updateThumbnail(screenshotActivities(prev), null);
@@ -1120,11 +1118,13 @@ final class ActivityStack {
                                 mStackSupervisor.startSpecificActivityLocked(r, false, false);
                             }
                         }
+
                     } else if (r.visible) {
                         // If this activity is already visible, then there is nothing
                         // else to do here.
                         if (DEBUG_VISBILITY) Slog.v(TAG, "Skipping: already visible at " + r);
                         r.stopFreezingScreenLocked(false);
+
                     } else if (onlyThisProcess == null) {
                         // This activity is not currently visible, but is running.
                         // Tell it to become visible.
@@ -1154,16 +1154,8 @@ final class ActivityStack {
 
                     // Aggregate current change flags.
                     configChanges |= r.configChangeFlags;
-                    boolean isSplitView = false;
 
-                    try {
-                        IWindowManager wm = (IWindowManager) WindowManagerGlobal.getWindowManagerService();
-                        isSplitView = wm.isTaskSplitView(r.task.taskId);
-                    } catch (RemoteException e) {
-                        Slog.e(TAG, "Cannot get split view status", e);
-                    }
-
-                    if (r.fullscreen && !isSplitView) {
+                    if (r.fullscreen) {
                         // At this point, nothing else needs to be shown
                         if (DEBUG_VISBILITY) Slog.v(TAG, "Fullscreen: at " + r);
                         behindFullscreen = true;
@@ -1271,7 +1263,6 @@ final class ActivityStack {
      * nothing happened.
      */
     final boolean resumeTopActivityLocked(ActivityRecord prev) {
-        Log.e("XPLOD", "Resume Top Activity Locked " + prev);
         return resumeTopActivityLocked(prev, null);
     }
 
