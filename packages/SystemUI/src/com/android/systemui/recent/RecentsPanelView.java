@@ -876,39 +876,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                     } else {
                         throw new IllegalStateException("Oops, no tag on view " + selectedView);
                     }
-                } else if (item.getItemId() == R.id.recent_force_stop) {
-                    ViewHolder viewHolder = (ViewHolder) selectedView.getTag();
-                    if (viewHolder != null) {
-                        final TaskDescription ad = viewHolder.taskDescription;
-                        ActivityManager am = (ActivityManager)mContext.getSystemService(
-                                Context.ACTIVITY_SERVICE);
-                        am.forceStopPackage(ad.packageName);
-                        ((ViewGroup) mRecentsContainer).removeViewInLayout(selectedView);
-                    } else {
-                        throw new IllegalStateException("Oops, no tag on view " + selectedView);
-                    }
-                } else if (item.getItemId() == R.id.recent_wipe_app) {
-                    ViewHolder viewHolder = (ViewHolder) selectedView.getTag();
-                    if (viewHolder != null) {
-                        final TaskDescription ad = viewHolder.taskDescription;
-                        ActivityManager am = (ActivityManager) mContext.
-                                getSystemService(Context.ACTIVITY_SERVICE);
-                        am.clearApplicationUserData(ad.packageName,
-                                new FakeClearUserDataObserver());
-                        ((ViewGroup) mRecentsContainer).removeViewInLayout(selectedView);
-                    } else {
-                        throw new IllegalStateException("Oops, no tag on view " + selectedView);
-                    }
-                } else if (item.getItemId() == R.id.recent_launch_floating) {
-                    ViewHolder viewHolder = (ViewHolder) selectedView.getTag();
-                    if (viewHolder != null) {
-                        final TaskDescription ad = viewHolder.taskDescription;
-                        Intent intent = ad.intent;
-                        intent.addFlags(Intent.FLAG_FLOATING_WINDOW
-                                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        dismissAndGoBack();
-                        getContext().startActivity(intent);
-                    }
                 } else {
                     return false;
                 }
