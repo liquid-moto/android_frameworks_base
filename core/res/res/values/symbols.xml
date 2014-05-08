@@ -1797,4 +1797,9 @@
 
   <!-- for wifi auto connection -->
   <java-symbol type="bool" name="wifi_autocon" />
+
+  <!-- FM stuff -->
+  <java-symbol type="string" name="volume_fm" />
+  <java-symbol type="bool" name="config_fmSeparateVolumeControl" />
+
 </resources>
