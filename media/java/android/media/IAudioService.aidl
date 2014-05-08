@@ -117,6 +117,8 @@ interface IAudioService {
 
     boolean isBluetoothA2dpOn();
 
+    boolean isFmActive();
+
     int requestAudioFocus(int mainStreamType, int durationHint, IBinder cb,
             IAudioFocusDispatcher fd, String clientId, String callingPackageName);
 

@@ -4523,4 +4523,7 @@
     <!-- Cling help message when hiding the navigation bar entering immersive mode [CHAR LIMIT=none] -->
     <string name="immersive_mode_confirmation" msgid="8554991488096662508">Swipe down from the top to exit full screen.</string>
 
+    <!-- Title of the dialog where the user is adjusting the audio volume for FM radio -->
+    <string name="volume_fm">FM radio volume</string>
+
 </resources>

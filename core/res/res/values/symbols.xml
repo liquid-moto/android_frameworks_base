@@ -1783,4 +1783,8 @@
   <java-symbol type="string" name="android_system_label" />
   <java-symbol type="bool" name="config_batterySdCardAccessibility" />
 
+  <!-- FM stuff -->
+  <java-symbol type="string" name="volume_fm" />
+  <java-symbol type="bool" name="config_fmSeparateVolumeControl" />
+
 </resources>

@@ -191,6 +191,11 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
                 R.drawable.ic_audio_vol,
                 R.drawable.ic_audio_vol_mute,
                 false),
+        FMStream(AudioManager.STREAM_FM,
+                R.string.volume_fm,
+                R.drawable.ic_audio_vol,
+                R.drawable.ic_audio_vol_mute,
+                false),
         RemoteStream(AudioService.STREAM_REMOTE_MUSIC,
                 R.string.volume_icon_description_media, //FIXME should have its own description
                 R.drawable.ic_media_route_on_holo_dark,
@@ -219,6 +224,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
         StreamResources.RingerStream,
         StreamResources.VoiceStream,
         StreamResources.MediaStream,
+		StreamResources.FMStream,
         StreamResources.NotificationStream,
         StreamResources.AlarmStream,
         StreamResources.MasterStream,
@@ -793,6 +799,11 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
                 max++;
                 break;
             }
+
+            case AudioManager.STREAM_FM: {
+                setMusicIcon(R.drawable.ic_audio_vol, R.drawable.ic_audio_vol_mute);
+                break;
+			}
 
             case AudioManager.STREAM_ALARM: {
                 break;
