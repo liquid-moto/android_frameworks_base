@@ -230,7 +230,7 @@ public class AudioService extends IAudioService.Stub {
         15, // STREAM_BLUETOOTH_SCO
         7,  // STREAM_SYSTEM_ENFORCED
         30, // STREAM_DTMF
-        30  // STREAM_TTS
+        30, // STREAM_TTS
         15  // STREAM_FM
     };
     /* mStreamVolumeAlias[] indicates for each stream if it uses the volume settings
@@ -284,7 +284,7 @@ public class AudioService extends IAudioService.Stub {
         AppOpsManager.OP_AUDIO_MEDIA_VOLUME,            // STREAM_SYSTEM_ENFORCED
         AppOpsManager.OP_AUDIO_MEDIA_VOLUME,            // STREAM_DTMF
         AppOpsManager.OP_AUDIO_MEDIA_VOLUME,            // STREAM_TTS
-        AppOpsManager.OP_AUDIO_MEDIA_VOLUME,            // STREAM_FM
+        AppOpsManager.OP_AUDIO_MEDIA_VOLUME             // STREAM_FM
     };
 
     private final boolean mUseFixedVolume;
